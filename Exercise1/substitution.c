@@ -6,6 +6,7 @@ char* allocateCharArray(uint32_t size)
 	return malloc(size * sizeof(char));
 }
 
+// Free malloced variables in cipher
 void freeCipher(cipher *cipher)
 {
 	free(cipher->alphabet);
@@ -17,7 +18,7 @@ bool charArrayIsNumber(char* string)
 {
 	int32_t stringLen = strlen(string), stringLoop;
 
-	for(stringLoop = 0 ; stringLoop <= stringLen ; ++stringLoop) {
+	for(stringLoop = 0 ; stringLoop < stringLen ; ++stringLoop) {
 		if (!isdigit(string[stringLoop]) && string[stringLoop] != '-') {
 			return false;
 		}
@@ -26,7 +27,8 @@ bool charArrayIsNumber(char* string)
 	return true;
 }
 
-char* alphabetToUpper(char* string)
+// convert the given string to capital letters
+char* stringToUpper(char* string)
 {
 	uint32_t stringLoop;
 	char *capitalUpper = allocateCharArray(strlen(string));
@@ -67,7 +69,7 @@ void setEncryptionCharMapping(cipher *cipher, char* charMapping)
 	strcpy(cipher->alphabet, setAlphabet(cipher->flags));
 	if (cipher->flags & FLAG_CASING) {
 		// set mapping to capital and add
-		capitalAlphabet = alphabetToUpper(charMapping);
+		capitalAlphabet = stringToUpper(charMapping);
 		strcpy(cipher->mapping, strcat(charMapping, capitalAlphabet));
 		free(capitalAlphabet);
 
@@ -77,10 +79,21 @@ void setEncryptionCharMapping(cipher *cipher, char* charMapping)
 }
 
 // Set the cipher to the correct shift mapping
-void setEncryptionIntMapping(cipher *cipher, uint32_t shift)
+void setEncryptionIntMapping(cipher *cipher, int32_t shift)
 {
+	uint32_t alphabetLoop;
 	allocateMemoryCipher(cipher);
 	strcpy(cipher->alphabet, setAlphabet(cipher->flags));
+
+	if (shift < 0) shift = ALPHABET_SIZE + shift;
+
+	for ( alphabetLoop = 0 ; alphabetLoop < ALPHABET_SIZE * 2 ; ++alphabetLoop) {
+		if (alphabetLoop < ALPHABET_SIZE){
+			cipher->mapping[alphabetLoop] = cipher->alphabet[( alphabetLoop + shift ) % ALPHABET_SIZE];
+		} else if (cipher->flags & FLAG_CASING) {
+			cipher->mapping[alphabetLoop] = cipher->alphabet[(( alphabetLoop + shift ) % ALPHABET_SIZE ) + ALPHABET_SIZE ];
+		}
+	}
 
 }
 
@@ -99,7 +112,6 @@ void readArgs(cipher* cipher, int argCount, char** args)
 
 	for(countLoop = 1 ; countLoop < argCount ; ++countLoop) {
 		currentArg = args[countLoop];
-		printf("%s %lu\n", currentArg, strlen(currentArg));
 
 		if (strcmp(currentArg, "-o") == 0) {
 			// Keep non-letters as is, honor letter casing
@@ -129,6 +141,7 @@ void readArgs(cipher* cipher, int argCount, char** args)
 	}
 }
 
+// Return the encrypted value of a given char
 char findCharMap(cipher cipher, char inputChar) 
 {
 	uint32_t alphabetLoop;
@@ -143,10 +156,18 @@ char findCharMap(cipher cipher, char inputChar)
 	return inputChar;
 }
 
-// encrypt the given string with the cipher
-char* encryptString(cipher *cipher, char* inputString)
+char findCharMapDecrypt(cipher cipher, char inputChar)
 {
-	return NULL;
+	uint32_t alphabetLoop;
+
+	for (alphabetLoop = 0 ; alphabetLoop <= strlen(cipher.mapping) ; ++alphabetLoop) {
+		if (cipher.mapping[alphabetLoop] == inputChar) {
+			return cipher.alphabet[alphabetLoop];
+		}
+	}
+
+	printf("ERROR: NO MAPPING FOUND FOR %c\n", inputChar);
+	return inputChar;
 }
 
 // Encrypt char with the given cipher
@@ -156,6 +177,9 @@ char encryptChar(cipher cipher, char inputChar)
 		if (! ( cipher.flags & FLAG_CASING ) ) {
 			inputChar = tolower(inputChar);
 		}
+		if (cipher.flags & FLAG_DECRYPT) {
+			return findCharMapDecrypt(cipher, inputChar);
+		}
 		return findCharMap(cipher, inputChar);
 
 	}
@@ -163,17 +187,14 @@ char encryptChar(cipher cipher, char inputChar)
 	return cipher.flags & FLAG_CASING ? inputChar : '\0';
 }
 
+// Read, encrypt and print the input until ctrl-D is pressed
 void readInput(cipher *cipher)
 {
 	char encryptedChar;
 
 	while(!feof(stdin)) {
 
-		if (cipher->flags & FLAG_DECRYPT) {
-			getchar();
-		} else {
-			encryptedChar = encryptChar(*cipher, getchar());
-		}
+		encryptedChar = encryptChar(*cipher, getchar());
 
 		putchar(encryptedChar);
 	}
