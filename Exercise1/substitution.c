@@ -26,6 +26,18 @@ bool charArrayIsNumber(char* string)
 	return true;
 }
 
+char* alphabetToUpper(char* string)
+{
+	uint32_t stringLoop;
+	char *capitalUpper = allocateCharArray(strlen(string));
+
+	for (stringLoop = 0 ; stringLoop < strlen(string) ; ++stringLoop) {
+		capitalUpper[stringLoop] = toupper(string[stringLoop]);
+	}
+
+	return capitalUpper;
+}
+
 // Allocate the correct amount of memory for the char* alphabet and mapping
 void allocateMemoryCipher(cipher *cipher)
 {
@@ -48,11 +60,16 @@ char* setAlphabet(uint8_t flags)
 // Set the cipher to the correct char mapping
 void setEncryptionCharMapping(cipher *cipher, char* charMapping)
 {
+	char* capitalAlphabet = NULL;
+
 	allocateMemoryCipher(cipher);
 
 	strcpy(cipher->alphabet, setAlphabet(cipher->flags));
 	if (cipher->flags & FLAG_CASING) {
 		// set mapping to capital and add
+		capitalAlphabet = alphabetToUpper(charMapping);
+		strcpy(cipher->mapping, strcat(charMapping, capitalAlphabet));
+		free(capitalAlphabet);
 
 	} else {
 		strcpy(cipher->mapping, charMapping);
@@ -86,17 +103,14 @@ void readArgs(cipher* cipher, int argCount, char** args)
 
 		if (strcmp(currentArg, "-o") == 0) {
 			// Keep non-letters as is, honor letter casing
-			printf("-o TRUE\n");
 			cipher->flags |= FLAG_CASING;
 			continue;
 		} else if (strcmp(currentArg, "-d") == 0) {
-			printf("-d TRUE\n");
 			// Decrypt
 			cipher->flags |= FLAG_DECRYPT;
 			continue;
 		} else if (strlen(currentArg) == ALPHABET_SIZE) {
 			// 26 letter char-mapping
-			printf("SET MAPPING\n");
 			setEncryptionCharMapping(cipher, currentArg);
 			encryptionSet = true;
 			break;
@@ -107,8 +121,6 @@ void readArgs(cipher* cipher, int argCount, char** args)
 			encryptionSet = true;
 			break;
 		}
-		free(currentArg);
-		free(args[countLoop]);
 	}
 
 	if (!encryptionSet) {
@@ -145,6 +157,7 @@ char encryptChar(cipher cipher, char inputChar)
 			inputChar = tolower(inputChar);
 		}
 		return findCharMap(cipher, inputChar);
+
 	}
 
 	return cipher.flags & FLAG_CASING ? inputChar : '\0';
@@ -175,6 +188,5 @@ int main(int argc, char** argv)
 	readArgs(&cipher, argc, argv);
 	readInput(&cipher);
 
-	free(cipher.alphabet);
-	free(cipher.mapping);
+	freeCipher(&cipher);
 }
