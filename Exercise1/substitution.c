@@ -149,7 +149,7 @@ char* encryptString(cipher *cipher, char* inputString)
 	return NULL;
 }
 
-// Encript char with the given cipher
+// Encrypt char with the given cipher
 char encryptChar(cipher cipher, char inputChar)
 {
 	if ( (inputChar >= 'A' && inputChar <= 'Z' ) || ( inputChar >= 'a' && inputChar <= 'z' )) {
