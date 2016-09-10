@@ -3,16 +3,22 @@
 // Allocate size amount of char memory
 char* allocateCharArray(uint32_t size)
 {
-	return calloc(size * sizeof(char));
+	return malloc(size * sizeof(char));
+}
+
+void freeCipher(cipher *cipher)
+{
+	free(cipher->alphabet);
+	free(cipher->mapping);
 }
 
 // Check if char array is number
 bool charArrayIsNumber(char* string)
 {
-	int32_t stringLen = strlen(currentArg), stringLoop;
+	int32_t stringLen = strlen(string), stringLoop;
 
-	for(stringLoop = 0 ; stringLoop <= stingLen ; ++stringLoop) {
-		if (!isdigit(currentArg[stringLoop]) && currentArg[stringLoop] != "-") {
+	for(stringLoop = 0 ; stringLoop <= stringLen ; ++stringLoop) {
+		if (!isdigit(string[stringLoop]) && string[stringLoop] != '-') {
 			return false;
 		}
 	}
@@ -20,23 +26,23 @@ bool charArrayIsNumber(char* string)
 	return true;
 }
 
-// Allocate the correct amount of memory for the char* alpabet and mapping
+// Allocate the correct amount of memory for the char* alphabet and mapping
 void allocateMemoryCipher(cipher *cipher)
 {
-	if (cipher.flags & FLAG_CASING) {
-		cipher.alphabet = allocateCharArray(2 * ALPHABET_SIZE);
-		cipher.mapping = allocateCharArray(2 * ALPHABET_SIZE);
+	if (cipher->flags & FLAG_CASING) {
+		cipher->alphabet = allocateCharArray(2 * ALPHABET_SIZE);
+		cipher->mapping = allocateCharArray(2 * ALPHABET_SIZE);
 		return;
 	}
 
-	cipher.alphabet = allocateCharArray(ALPHABET_SIZE);
-	cipher.mapping = allocateCharArray(ALPHABET_SIZE);
+	cipher->alphabet = allocateCharArray(ALPHABET_SIZE);
+	cipher->mapping = allocateCharArray(ALPHABET_SIZE);
 }
 
 // return the correct alphabet char*, with or without capitals
 char* setAlphabet(uint8_t flags)
 {
-	return flags & FLAG_CASING ? strcat(ALPHABET_CHAR, ALPHABET_CAPITAL_CHAR) : ALPHABET_CHAR;
+	return flags & FLAG_CASING ? ALPHABET_BOTH_CHAR: ALPHABET_CHAR;
 }
 
 // Set the cipher to the correct char mapping
@@ -44,15 +50,20 @@ void setEncryptionCharMapping(cipher *cipher, char* charMapping)
 {
 	allocateMemoryCipher(cipher);
 
-	cipher.alphabet = setAlphabet(cipher.flags);
-	cipher.mapping = cipher.flags & FLAG_CASING ? strcat()
+	strcpy(cipher->alphabet, setAlphabet(cipher->flags));
+	if (cipher->flags & FLAG_CASING) {
+		// set mapping to capital and add
+
+	} else {
+		strcpy(cipher->mapping, charMapping);
+	}
 }
 
 // Set the cipher to the correct shift mapping
 void setEncryptionIntMapping(cipher *cipher, uint32_t shift)
 {
 	allocateMemoryCipher(cipher);
-	cipher.alphabet = setAlphabet(cipher.flags);
+	strcpy(cipher->alphabet, setAlphabet(cipher->flags));
 
 }
 
@@ -60,7 +71,8 @@ void setEncryptionIntMapping(cipher *cipher, uint32_t shift)
 void readArgs(cipher* cipher, int argCount, char** args)
 {
 	int32_t countLoop, intMapping;
-	char* currentArg = NULL;
+	char* currentArg;
+	bool encryptionSet = false;
 
 	if (argCount <= 1) {
 		// if no numver of char mapping is given , nothing can be done
@@ -70,46 +82,87 @@ void readArgs(cipher* cipher, int argCount, char** args)
 
 	for(countLoop = 1 ; countLoop < argCount ; ++countLoop) {
 		currentArg = args[countLoop];
-		if (strcpm(currentArg, "-o")) {
+		printf("%s %lu\n", currentArg, strlen(currentArg));
+
+		if (strcmp(currentArg, "-o") == 0) {
 			// Keep non-letters as is, honor letter casing
-			cipher.flags |= FLAG_CASING;
+			printf("-o TRUE\n");
+			cipher->flags |= FLAG_CASING;
 			continue;
-		} else if (strcmp(currentArg, "-d")) {
+		} else if (strcmp(currentArg, "-d") == 0) {
+			printf("-d TRUE\n");
 			// Decrypt
-			cipher.flags | = FLAG_DECRYPT;
+			cipher->flags |= FLAG_DECRYPT;
 			continue;
-		} else if (strlen(currentArg, ALPHABET_SIZE)) {
+		} else if (strlen(currentArg) == ALPHABET_SIZE) {
 			// 26 letter char-mapping
-			setEncryptionCharMapping(currentArg);
+			printf("SET MAPPING\n");
+			setEncryptionCharMapping(cipher, currentArg);
+			encryptionSet = true;
 			break;
 		} else if(charArrayIsNumber(currentArg)) {
 			// Automatic integer mapping
-			sscanf(currentArg, "%d", &intMapping)
-			setEncryptionIntMapping(intMapping);
+			sscanf(currentArg, "%d", &intMapping);
+			setEncryptionIntMapping(cipher, intMapping);
+			encryptionSet = true;
 			break;
 		}
-		
+		free(currentArg);
+		free(args[countLoop]);
+	}
+
+	if (!encryptionSet) {
+		printf("ENCRYPTION NOT SET\n");
+		exit(-3);
 	}
 }
 
+char findCharMap(cipher cipher, char inputChar) 
+{
+	uint32_t alphabetLoop;
 
+	for (alphabetLoop = 0 ; alphabetLoop <= strlen(cipher.alphabet) ; ++alphabetLoop) {
+		if (cipher.alphabet[alphabetLoop] == inputChar) {
+			return cipher.mapping[alphabetLoop];
+		}
+	}
+
+	printf("ERROR: NO MAPPING FOUND FOR %c\n", inputChar);
+	return inputChar;
+}
 
 // encrypt the given string with the cipher
 char* encryptString(cipher *cipher, char* inputString)
 {
-
+	return NULL;
 }
 
 // Encript char with the given cipher
-char encriptChar(cipher *cipher, char inputChar)
+char encryptChar(cipher cipher, char inputChar)
 {
+	if ( (inputChar >= 'A' && inputChar <= 'Z' ) || ( inputChar >= 'a' && inputChar <= 'z' )) {
+		if (! ( cipher.flags & FLAG_CASING ) ) {
+			inputChar = tolower(inputChar);
+		}
+		return findCharMap(cipher, inputChar);
+	}
 
+	return cipher.flags & FLAG_CASING ? inputChar : '\0';
 }
 
-void readInput()
+void readInput(cipher *cipher)
 {
-	while(1) {
-		getchar()
+	char encryptedChar;
+
+	while(!feof(stdin)) {
+
+		if (cipher->flags & FLAG_DECRYPT) {
+			getchar();
+		} else {
+			encryptedChar = encryptChar(*cipher, getchar());
+		}
+
+		putchar(encryptedChar);
 	}
 }
 
@@ -117,12 +170,11 @@ void readInput()
 int main(int argc, char** argv)
 {
 	cipher cipher;
-	cipher.alphabet = cipher.mapping = NULL:
 	cipher.flags = 0;
 
 	readArgs(&cipher, argc, argv);
-	readInput();
+	readInput(&cipher);
 
 	free(cipher.alphabet);
-	free(cipher.maping);
+	free(cipher.mapping);
 }

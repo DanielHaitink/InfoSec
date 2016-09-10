@@ -9,6 +9,7 @@
 
 #define ALPHABET_CHAR          "abcdefghijklmnopqrstuvwxyz"
 #define ALPHABET_CAPITAL_CHAR  "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+#define ALPHABET_BOTH_CHAR     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 #define ALPHABET_SIZE          26
 
@@ -20,6 +21,6 @@ enum flagsEnum
 
 typedef struct cipher {
 	char* alphabet;
-	char* encryptedAlphabet;
+	char* mapping;
 	uint8_t flags;
 } cipher;
