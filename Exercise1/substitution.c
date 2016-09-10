@@ -146,7 +146,7 @@ char findCharMap(cipher cipher, char inputChar)
 {
 	uint32_t alphabetLoop;
 
-	for (alphabetLoop = 0 ; alphabetLoop <= strlen(cipher.alphabet) ; ++alphabetLoop) {
+	for (alphabetLoop = 0 ; alphabetLoop < strlen(cipher.alphabet) ; ++alphabetLoop) {
 		if (cipher.alphabet[alphabetLoop] == inputChar) {
 			return cipher.mapping[alphabetLoop];
 		}
@@ -160,7 +160,7 @@ char findCharMapDecrypt(cipher cipher, char inputChar)
 {
 	uint32_t alphabetLoop;
 
-	for (alphabetLoop = 0 ; alphabetLoop <= strlen(cipher.mapping) ; ++alphabetLoop) {
+	for (alphabetLoop = 0 ; alphabetLoop < strlen(cipher.mapping) ; ++alphabetLoop) {
 		if (cipher.mapping[alphabetLoop] == inputChar) {
 			return cipher.alphabet[alphabetLoop];
 		}
