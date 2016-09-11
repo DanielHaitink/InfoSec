@@ -199,8 +199,10 @@ void readInput(cipher *cipher)
 		encryptedChar = encryptChar(*cipher, currentChar);
 
 		putchar(encryptedChar);
+#ifdef DEBUG
         putchar(currentChar);
         putchar('\n');
+#endif
 	}
 }
 
