@@ -197,8 +197,10 @@ void readInput(cipher *cipher)
         currentChar = getchar();
         if (feof(stdin)) return;
 		encryptedChar = encryptChar(*cipher, currentChar);
-
-		putchar(encryptedChar);
+        
+        if (encryptChar != '\0'){
+            putchar(encryptedChar);
+        }
 #ifdef DEBUG
         putchar(currentChar);
         putchar('\n');
