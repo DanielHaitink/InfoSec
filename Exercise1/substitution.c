@@ -27,7 +27,7 @@ bool charArrayIsNumber(char* string)
 	return true;
 }
 
-// convert the given string to capital letters
+// Convert the given string to capital letters
 char* stringToUpper(char* string)
 {
 	uint32_t stringLoop;
@@ -65,8 +65,8 @@ void setEncryptionCharMapping(cipher *cipher, char* charMapping)
 	char* capitalAlphabet = NULL;
 
 	allocateMemoryCipher(cipher);
-
 	strcpy(cipher->alphabet, setAlphabet(cipher->flags));
+	
 	if (cipher->flags & FLAG_CASING) {
 		// set mapping to capital and add
 		capitalAlphabet = stringToUpper(charMapping);
@@ -82,15 +82,20 @@ void setEncryptionCharMapping(cipher *cipher, char* charMapping)
 void setEncryptionIntMapping(cipher *cipher, int32_t shift)
 {
 	uint32_t alphabetLoop;
+	
 	allocateMemoryCipher(cipher);
 	strcpy(cipher->alphabet, setAlphabet(cipher->flags));
-
+	
+	// If shift is negative, make it positive
 	if (shift < 0) shift = ALPHABET_SIZE + shift;
 
+	// Create a mapping table using the shift
 	for ( alphabetLoop = 0 ; alphabetLoop < ALPHABET_SIZE * 2 ; ++alphabetLoop) {
 		if (alphabetLoop < ALPHABET_SIZE){
+			// Mapping for lowercase
 			cipher->mapping[alphabetLoop] = cipher->alphabet[( alphabetLoop + shift ) % ALPHABET_SIZE];
 		} else if (cipher->flags & FLAG_CASING) {
+			// Mapping for casing
 			cipher->mapping[alphabetLoop] = cipher->alphabet[(( alphabetLoop + shift ) % ALPHABET_SIZE ) + ALPHABET_SIZE ];
 		}
 	}
@@ -110,6 +115,7 @@ void readArgs(cipher* cipher, int argCount, char** args)
 		exit(-1);
 	}
 
+	// Check for all the args after the program name
 	for(countLoop = 1 ; countLoop < argCount ; ++countLoop) {
 		currentArg = args[countLoop];
 
@@ -134,7 +140,8 @@ void readArgs(cipher* cipher, int argCount, char** args)
 			break;
 		}
 	}
-
+	
+	// Program couldn't find an integer or a char mapping
 	if (!encryptionSet) {
 		printf("ENCRYPTION NOT SET\n");
 		exit(-3);
@@ -156,10 +163,11 @@ char findCharMap(cipher cipher, char inputChar)
 	return inputChar;
 }
 
+// Decrypt char by looping through the mapping of the cipher and returning the alphabet char
 char findCharMapDecrypt(cipher cipher, char inputChar)
 {
 	uint32_t alphabetLoop;
-
+	
 	for (alphabetLoop = 0 ; alphabetLoop < strlen(cipher.mapping) ; ++alphabetLoop) {
 		if (cipher.mapping[alphabetLoop] == inputChar) {
 			return cipher.alphabet[alphabetLoop];
@@ -173,17 +181,21 @@ char findCharMapDecrypt(cipher cipher, char inputChar)
 // Encrypt char with the given cipher
 char encryptChar(cipher cipher, char inputChar)
 {
+	// If char is letter encrypt
 	if ( (inputChar >= 'A' && inputChar <= 'Z' ) || ( inputChar >= 'a' && inputChar <= 'z' )) {
+		// Make char lower case if needed
 		if (! ( cipher.flags & FLAG_CASING ) ) {
 			inputChar = tolower(inputChar);
 		}
+		// If decrypt is wanted, use other function else normal function
 		if (cipher.flags & FLAG_DECRYPT) {
 			return findCharMapDecrypt(cipher, inputChar);
 		}
 		return findCharMap(cipher, inputChar);
 
 	}
-
+	
+	// If casing is honored, return input char, else empty char
 	return cipher.flags & FLAG_CASING ? inputChar : '\0';
 }
 
@@ -192,12 +204,16 @@ void readInput(cipher *cipher)
 {
 	char currentChar, encryptedChar;
 
+	// Loop until if-statement catches feof
 	while(true) {
         
         currentChar = getchar();
         if (feof(stdin)) return;
-		encryptedChar = encryptChar(*cipher, currentChar);
+	
+	// Encrypt char
+	encryptedChar = encryptChar(*cipher, currentChar);
         
+        // Print char if it is empty
         if (encryptedChar != '\0'){
             putchar(encryptedChar);
         }
@@ -211,6 +227,7 @@ void readInput(cipher *cipher)
 
 int main(int argc, char** argv)
 {
+	// Init cipher
 	cipher cipher;
 	cipher.flags = 0;
 
