@@ -190,13 +190,17 @@ char encryptChar(cipher cipher, char inputChar)
 // Read, encrypt and print the input until ctrl-D is pressed
 void readInput(cipher *cipher)
 {
-	char encryptedChar;
+	char currentChar, encryptedChar;
 
-	while(!feof(stdin)) {
-
-		encryptedChar = encryptChar(*cipher, getchar());
+	while(true) {
+        
+        currentChar = getchar();
+        if (feof(stdin)) return;
+		encryptedChar = encryptChar(*cipher, currentChar);
 
 		putchar(encryptedChar);
+        putchar(currentChar);
+        putchar('\n');
 	}
 }
 
