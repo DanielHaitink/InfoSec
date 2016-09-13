@@ -71,7 +71,7 @@ for i in range(0, probableLen):
 			probE = letter + A_INT
 	
 	letter = probE - 4
-	keyShift.append(letter - A_INT)
+	keyShift.append(26 - (letter - A_INT))
 	probableKey += chr(letter)
 
 print("The probable key is: %s" % probableKey)
