@@ -26,6 +26,10 @@ for i in range(5,15) :
 	sumOfStd = 0
 	#alphabetHist = [0] * 26
 	lettersHist = [[0 for x in range(26)] for y in range(i)] 
+	for h in range(0:i):
+		hList = [0] * []
+		for w in range(0:26):
+			lettersHist
 
 	print(lettersHist)
 
