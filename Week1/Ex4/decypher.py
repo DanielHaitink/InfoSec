@@ -8,6 +8,7 @@ probableLen = 0
 probableKey = ""
 decryptedText = ""
 keyShift = []
+secondBest = ""
 A_INT = ord('a')
 
 # Put encrypted file in string text
@@ -64,17 +65,25 @@ keywordHist = allHist[probableLen-5]
 for i in range(0, probableLen):
 	probE = 0
 	probESize = 0
+	secondBest
+	probESecond = 0
+	probESecondSize = 0
 	
 	for letter in range(0,26):
 		if keywordHist[i][letter] > probESize:
+			probESecondSize = probESize
+			probESecond = probE
+
 			probESize = keywordHist[i][letter]
 			probE = letter + A_INT
-	
+
 	letter = probE - 4
 	keyShift.append(26 - (letter - A_INT))
 	probableKey += chr(letter)
+	secondBest += chr(probESecond)
 
 print("The probable key is: %s" % probableKey)
+print("The probable second best key is: %s" % secondBest)
 print(keyShift)
 
 # Decrypt
