@@ -1,3 +1,5 @@
+import sys
+
 sk = [8, 30, 39, 88, 221, 388, 812, 1782, 3411, 8731, 15610, 33333, 70123, 154321, 300001, 666666]
 sumLi = [8, 38, 77, 165, 386, 774, 1586, 3368, 6779, 15510, 31120, 64453, 134576, 288897, 588898, 1255564] # sums of public key
 n = 1434539 # > sumLi last index
@@ -72,12 +74,26 @@ def encryptText(text, public_key):
 
 #initialize (sk, n, m, sumLi, public_key, public_keyHex)
 
-print(encrypt("p", public_key))
-print(decrypt(encrypt("p", public_key)))
+#print(encrypt("p", public_key))
+#print(decrypt(encrypt("p", public_key)))
 
-text = "DEZE tekst is encrypted!"
-encryptedText = encryptText(text, public_key)
-print(encryptedText)
-decryptedText = decryptText(encryptedText)
-print(decryptedText)
+#text = "DEZE tekst is encrypted!"
+#encryptedText = encryptText(text, public_key)
+#print(encryptedText)
+#decryptedText = decryptText(encryptedText)
+#print(decryptedText)
+#text = ""
+
+#for line in open("DanielHaitink.txt", 'r+'):
+#	decimal = int(line, 16)
+#	text += decrypt(decimal)
+#print(text)
+#print(decrypt(2495324).encode('utf8').decode('utf8'))
+
+
+for line in sys.stdin:
+	encrypted = encryptText(line, public_key)
+	print(encrypted)
+	print(decryptText(encrypted))
+
 
