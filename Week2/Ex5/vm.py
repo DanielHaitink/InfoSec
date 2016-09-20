@@ -36,6 +36,11 @@ altKeyC = ""
 for i in altKey:
 	altKeyC += chr(i)
 encrypted = encryptText(text, key)
+print(encrypted)
+eList = []
+for i in encrypted:
+	eList.append(ord(i))
+print(eList)
 decrypted = decryptText(encrypted, altKeyC)
 
 print(decrypted)

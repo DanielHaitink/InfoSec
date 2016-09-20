@@ -48,13 +48,21 @@ def encrypt(char, public_key):
 
 def solveDecrypt(charNum, sk):
 	binary = "0b"
+	binary2 = "0b"
 	for ai in reversed(sk):
-		if ai <= charNum:
-			charNum -= ai
-			binary += "1"
-		else :
-			binary += "0"
-	return chr(int(binary,2))
+		if len(binary) < 10:
+			if ai <= charNum:
+				charNum -= ai
+				binary += "1"
+			else :
+				binary += "0"
+		else:
+			if ai <= charNum:
+				charNum -= ai
+				binary2 += "1"
+			else :
+				binary2 += "0"
+	return chr(int(binary,2)) + chr(int(binary2,2))
 
 def decrypt(charEnc):
 	return solveDecrypt((charEnc* inv_Mod) % n, sk)
@@ -82,13 +90,13 @@ def encryptText(text, public_key):
 #print(encryptedText)
 #decryptedText = decryptText(encryptedText)
 #print(decryptedText)
-#text = ""
+text = ""
 
-#for line in open("DanielHaitink.txt", 'r+'):
-#	decimal = int(line, 16)
-#	text += decrypt(decimal)
-#print(text)
-#print(decrypt(2495324).encode('utf8').decode('utf8'))
+for line in open("DanielHaitink.txt", 'r+'):
+	decimal = int(line, 16)
+	text += decrypt(decimal)
+print(text)
+print(decrypt(2495324).encode('utf8').decode('utf8'))
 
 
 for line in sys.stdin:
