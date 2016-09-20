@@ -109,7 +109,7 @@ def feistelDecrypt(text, loops, key):
 		numKeys += 1
 	# Generate keys
 	keys = listToString(generateSHA2Sums(key, numKeys))
-	print(keys)
+	#print(keys)
 
 	# Check if text is dividable by 8
 	if (len(text)) % 8:
@@ -129,9 +129,9 @@ def xorFourBytes(string, key):
 	returnString = []
 	#print(string)
 	for i in range(0,4):
-		print(string[i])
+		#print(string[i])
 		returnString.append((int.from_bytes(string[i], byteorder = "big")  ^ key[i]).to_bytes(2, byteorder='big'))
-	print((returnString))
+	#print((returnString))
 	return returnString
 
 def feistel8BytesDecryptBytes(str8Bytes, key):
@@ -150,7 +150,7 @@ def feistelDecryptBytes(text, loops, key):
 		numKeys += 1
 	# Generate keys
 	keys = listToString(generateSHA2Sums(key, numKeys))
-	print(keys)
+	#print(keys)
 
 	# Check if text is dividable by 8
 	if (len(text)) % 8:
@@ -179,15 +179,15 @@ with open("feistel.enc.Feistel", 'rb') as f:
 		#encryptedText += byteChr(byte)
 		#encryptedText += chr(int(byte.encode('hex'), 16))
 		byte = f.read(1)
-print(byteList)
-print(encryptedText)
+#print(byteList)
+#print(encryptedText)
 
 key = "The Feistel Algorithm"
-print("Decrypted:")
+#print("Decrypted:")
 decrypted = (feistelDecryptBytes(byteList, 16, key))
-print(decrypted)
-for item in decrypted:
-	print(item.decode(encoding='UTF-8',errors='ignore'))
+#print(decrypted)
+f#or item in decrypted:
+	#print(item.decode(encoding='UTF-8',errors='ignore'))
 
 
 flag = 0
