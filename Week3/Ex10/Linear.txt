@@ -1,0 +1,27 @@
+Beetle Legs = a = 6
+Spider Legs = b = 8
+total legs  = c = 56
+
+6x+8y=56
+
+
+
+biggest common divisor = 2
+
+3x+4y=23
+
+3x + 4y = 1
+
+
+3x = 1 - 4y
+
+
+
+56 = 2*h
+h = 23
+
+3x+4y=2
+x = 2, y = -1
+x = -2
+
+So there are ???
